@@ -11,34 +11,20 @@
 
 ---
 
-## Project Documentation
+This document will showcase how to use the python Azure API to interact with 2 of their services that relate to:
 
-The purpose of this project is to learn about features available in Azure's Python libraries to manage Virtual Machines
-as well as Storage using Cloudmesh.
+1) Virtual machines management 
+2) Storage management for files
 
-:o: the project is not just about learning, but about developing a multicloud interface to clouds which includes azure and is located at cloudmesh.cloud. This report is not needed and should be integrated in most aspects into cloudmesh-manaual.
+This code has been integrated in cloudmesh to deliver a multicloud environment that not only allows us to manage virtual amchines and storage on Azure, but also on other clouds, such as OpenStack, AWS, and Google.
 
-However the document is a good example on how to take notes and document how to do certain things with the azure library.
+## Prerequisits
 
-:o: cloudmesh Config() is not used in the examples The inclusion of credetials in the examples must be avoided and replaced with Config() using cloudmesh.yaml
+We use Python 3.7.4, but earlier versions may also work. 
 
-## Scope
-
-This document will walk you through every step needed to leverage Azure's Python Libraries
-to interact with 2 of their Services:
-1) Virtual Machines Management
-2) Storage - How to store files in a highly available and scalable cloud storage service.
-
-Once we have a good understanding on how to use Azure's Python libraries, we will use that code to write Cloudmesh
-`Provider classes` for Virtual Machines (VM) and Storage.
-
-## Python Version
-
-The information provided in this document considers the use of `Python 3.7.2`
- 
 # Virtual Machines 
 
-Let's get started with Azure Virtual Machine Management using Python.
+To use virtusl amachines we have to get an account on Azure.
 
 ## Azure Service Principal Credentials
 
