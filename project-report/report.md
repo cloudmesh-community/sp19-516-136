@@ -20,7 +20,7 @@ as well as Storage using Cloudmesh.
 
 However the document is a good example on how to take notes and document how to do certain things with the azure library.
 
-:o: cloudmesh Config() is not used in the examples The inclusion of credetials in the examples must be avoided and replaced with Config() using cloudmesh4.yaml
+:o: cloudmesh Config() is not used in the examples The inclusion of credetials in the examples must be avoided and replaced with Config() using cloudmesh.yaml
 
 ## Scope
 
@@ -178,13 +178,13 @@ The first one receives the following parameters `(client_id, secret, tenant)`
 from azure.common.credentials import ServicePrincipalCredentials
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
@@ -214,13 +214,13 @@ from azure.common.credentials import ServicePrincipalCredentials
 from msrestazure.azure_cloud import AZURE_PUBLIC_CLOUD
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
@@ -335,14 +335,14 @@ from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 default = spec["default"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
@@ -374,14 +374,14 @@ from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 default = spec["default"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
@@ -416,14 +416,14 @@ from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 default = spec["default"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
@@ -459,14 +459,14 @@ from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 default = spec["default"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
@@ -503,14 +503,14 @@ from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 default = spec["default"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
@@ -580,14 +580,14 @@ from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 default = spec["default"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
@@ -779,14 +779,14 @@ from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.compute import ComputeManagementClient
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 default = spec["default"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
@@ -967,14 +967,14 @@ from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.compute.models import DiskCreateOption
 from cloudmesh.management.configuration.config import Config
 
-configuration = "~/.cloudmesh/cloudmesh4.yaml"
+configuration = "~/.cloudmesh/cloudmesh.yaml"
 
 conf = Config(configuration)["cloudmesh"]
 spec = conf["cloud"]["azure"]
 cred = spec["credentials"]
 default = spec["default"]
 
-# ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
+# ServicePrincipalCredentials related Variables to configure in cloudmesh.yaml file
 # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
 # AZURE_SECRET_KEY = '<Secret Key from Application configured in Azure>'
 # AZURE_TENANT_ID = '<Directory ID from Azure Active Directory section>'
