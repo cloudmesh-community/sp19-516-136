@@ -1,8 +1,12 @@
 import traceback
 
+from datetime import datetime
 from cloudmesh.abstractclass.ComputeNodeABC import ComputeNodeABC
 from cloudmesh.management.configuration.config import Config
+from cloudmesh.common.debug import VERBOSE
+from cloudmesh.common.util import HEADING
 from cloudmesh.common.dotdict import dotdict
+from cloudmesh.common.console import Console
 
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
@@ -12,30 +16,31 @@ from azure.mgmt.compute.models import DiskCreateOption
 
 from msrestazure.azure_exceptions import CloudError
 
-# noinspection PyUnusedLocal
 class NativeProvider(ComputeNodeABC):
 
-<<<<<<< HEAD
-    def __init__(self, name="azure_arm",
-                 configuration="~/.cloudmesh/cloudmesh.yaml"):
-=======
-    def __init__(self, name="azure", configuration="~/.cloudmesh/cloudmesh4.yaml"):
->>>>>>> origin/master
+    def __init__(self, name=None, configuration="~/.cloudmesh/cloudmesh4.yaml"):
         """
         Initializes the provider. The default parameters are read from the configutation
         file that is defined in yaml format.
         :param name: The name of the provider as defined in the yaml file
         :param configuration: The location of the yaml configuration file
         """
-        self.config = Config()
 
         conf = Config(configuration)["cloudmesh"]
 
-        self.user = conf["profile"]
-        self.cloud = name
+        self.user = Config()["cloudmesh"]["profile"]["user"]
         self.spec = conf["cloud"][name]
+        self.cloud = name
+
         cred = self.spec["credentials"]
         self.default = self.spec["default"]
+        self.cloudtype = self.spec["cm"]["kind"]
+        super().__init__(name, conf)
+
+        VERBOSE(cred, verbose=10)
+
+        if self.cloudtype != 'azure':
+            Console.error("This class is meant for azure cloud")
 
         # ServicePrincipalCredentials related Variables to configure in cloudmesh4.yaml file
         # AZURE_APPLICATION_ID = '<Application ID from Azure Active Directory App Registration Process>'
@@ -51,58 +56,83 @@ class NativeProvider(ComputeNodeABC):
         SUBSCRIPTION_ID = cred['AZURE_SUBSCRIPTION_ID']
 
         # Management Clients
-        resource_client = ResourceManagementClient(credentials, SUBSCRIPTION_ID)
-        compute_client = ComputeManagementClient(credentials, SUBSCRIPTION_ID)
-        network_client = NetworkManagementClient(credentials, SUBSCRIPTION_ID)
+        self.resource_client = ResourceManagementClient(credentials, SUBSCRIPTION_ID)
+        self.compute_client  = ComputeManagementClient(credentials, SUBSCRIPTION_ID)
+        self.network_client  = NetworkManagementClient(credentials, SUBSCRIPTION_ID)
 
         # Azure Resource Group
-        GROUP_NAME = self.default["resource_group"]
+        self.GROUP_NAME      = self.default["resource_group"]
 
         # Azure Datacenter Region
-        LOCATION = cred["AZURE_REGION"]
+        self.LOCATION        = cred["AZURE_REGION"]
 
         # NetworkManagementClient related Variables
-        VNET_NAME       = self.default["network"]
-        SUBNET_NAME     = self.default["subnet"]
-        IP_CONFIG_NAME  = 'azure-cloudmesh-ip-config'
-        NIC_NAME        = 'azure-cloudmesh-nic'
-
-
-
+        self.VNET_NAME       = self.default["network"]
+        self.SUBNET_NAME     = self.default["subnet"]
+        self.IP_CONFIG_NAME  = self.default["AZURE_VM_IP_CONFIG"]
+        self.NIC_NAME        = self.default["AZURE_VM_NIC"]
 
         # Azure VM Storage details
-        OS_DISK_NAME = cred["AZURE_VM_DISK_NAME"]
+        self.OS_DISK_NAME    = self.default["AZURE_VM_DISK_NAME"]
+        self.USERNAME        = self.default["AZURE_VM_USER"]
+        self.PASSWORD        = self.default["AZURE_VM_PASSWORD"]
+        self.VM_NAME         = self.default["AZURE_VM_NAME"]
 
-        USERNAME = cred["AZURE_VM_USER"]
-        PASSWORD = cred["AZURE_VM_PASSWORD"]
-        VM_NAME = cred["AZURE_VM_NAME"]
+        # Parse Image1 from yaml file
+        image                = self.default["image"].split(":")
+        imgOS                = image[0]
+        imgPublisher         = image[1]
+        imgOffer             = image[2]
+        imgSKU               = image[3]
+        imgVersion           = image[4]
 
-        # TODO - I need to be able to parse the image settings from the yaml file default setting to create the VM_REFERENCE
-        VM_REFERENCE = {
-            'linux': {
-                'publisher': 'Canonical',
-                'offer': 'UbuntuServer',
-                'sku': '16.04.0-LTS',
-                'version': self.cm["version"]
-            },
-            'windows': {
-                'publisher': 'MicrosoftWindowsServer',
-                'offer': 'WindowsServer',
-                'sku': '2016-Datacenter',
-                'version': self.cm["version"]
+        # Parse Image2 from yaml file
+        image2               = self.default["image2"].split(":")
+        includeImage2        = False
+
+        if image2 != '':
+            imgOS2           = image2[0]
+            imgPublisher2    = image2[1]
+            imgOffer2        = image2[2]
+            imgSKU2          = image2[3]
+            imgVersion2      = image2[4]
+
+            # Declare Virtual Machine Settings
+            self.VM_REFERENCE = {
+                imgOS: {
+                    'publisher': imgPublisher,
+                    'offer': imgOffer,
+                    'sku': imgSKU,
+                    'version': imgVersion
+                },
+                imgOS2: {
+                    'publisher': imgPublisher2,
+                    'offer': imgOffer2,
+                    'sku': imgSKU2,
+                    'version': imgVersion2
+                }
             }
-        }
+        else:
+            # Declare Virtual Machine Settings
+            self.VM_REFERENCE = {
+                imgOS: {
+                    'publisher': imgPublisher,
+                    'offer': imgOffer,
+                    'sku': imgSKU,
+                    'version': imgVersion
+                }
+            }
 
-
-
-        # Create Resource group
+        # Create or Update Resource group
         print('\nCreate Azure Virtual Machine Resource Group')
-        resource_client.resource_groups.create_or_update(GROUP_NAME, {'location': LOCATION})
+        self.resource_client.resource_groups.create_or_update(self.GROUP_NAME, {'location': self.LOCATION})
 
-    try:
-        nic = create_nic()
-    except CloudError:
-        print('A VM operation failed:\n{}'.format(traceback.format_exc()))
+        if self.NIC_ID is None:
+            try:
+                self.nic    = self.create_nic()
+                self.NIC_ID = self.nic.id
+            except CloudError:
+                print('A VM operation failed:\n{}'.format(traceback.format_exc()))
 
     def start(self, groupName=None, vmName=None):
         """
@@ -112,21 +142,16 @@ class NativeProvider(ComputeNodeABC):
         :return:  The dict representing the node
         """
         if groupName is None:
-            groupName = self.GROUP_NAME
+            groupName   = self.GROUP_NAME
         if vmName is None:
-            vmName = self.VM_NAME
-
-        node = dotdict()
-        node.name = groupName
-        node.vmName = vmName
+            vmName      = self.VM_NAME
 
         # Start the VM
-        print('\nStarting Azure VM')
+        VERBOSE(" ".join('Starting Azure VM'))
         async_vm_start = self.compute_client.virtual_machines.start(groupName, vmName)
         async_vm_start.wait()
-        return node
+        return self.info(groupName)
 
-    # TODO Restart does not exist in ComputeNodeABC is it the same as Resume?
     def restart(self, groupName=None, vmName=None):
         """
         restart a node
@@ -139,15 +164,11 @@ class NativeProvider(ComputeNodeABC):
         if vmName is None:
             vmName = self.VM_NAME
 
-        node = dotdict()
-        node.name = groupName
-        node.vmName = vmName
-
         # Restart the VM
-        print('\nRestarting Azure VM')
+        VERBOSE(" ".join('Restarting Azure VM'))
         async_vm_restart = self.compute_client.virtual_machines.restart(groupName, vmName)
         async_vm_restart.wait()
-        return node
+        return self.info(groupName)
 
     def stop(self, groupName=None, vmName=None):
         """
@@ -161,72 +182,33 @@ class NativeProvider(ComputeNodeABC):
         if vmName is None:
             vmName = self.VM_NAME
 
-        node = dotdict()
-        node.name = groupName
-        node.vmName = vmName
-
         # Stop the VM
-        print('\nStopping Azure VM')
+        VERBOSE(" ".join('Stopping Azure VM'))
         async_vm_stop = self.compute_client.virtual_machines.power_off(groupName, vmName)
         async_vm_stop.wait()
-        return node
+        return self.info(groupName)
 
     def info(self, groupName=None):
         """
         gets the information of a node with a given name
-
+        List VM in resource group
         :param name:
         :return: The dict representing the node including updated status
         """
         if groupName is None:
             groupName = self.GROUP_NAME
 
-        node = dotdict()
-        node.name = groupName
-
-        list = []
-
-        # List VM in resource group
-        print('\nList VMs in resource group')
-        for vm in self.compute_client.virtual_machines.list(groupName):
-            print("\tVM: {}".format(vm.name))
-            v = dotdict()
-            v.cloud_id = vm.cloud_id
-            v.cloud = vm.cloud
-            v.name = vm.name
-            v.region = vm.region
-            v.size = vm.size
-            v.state = vm.state
-            v.public_ips = vm.public_ips
-            v.private_ips = vm.private_ips
-            list.append(v)
-        return self.to_dict(list)
+        node = self.compute_client.virtual_machines.list_all(groupName)
+        return self.update_dict(node, kind="node")
 
     def list(self):
         """
-        list all nodes id
-
-        :return: an array of dicts representing the nodes
+        List all Azure Virtual Machines from my Account
+        :return: dict or libcloud object
         """
-        # List all Azure Virtual Machines from my Account
+        nodes = self.compute_client.virtual_machines.list_all()
+        return self.update_dict(nodes, kind="node")
 
-        list = []
-
-        print('\nList all Azure Virtual Machines')
-        for vm in self.compute_client.virtual_machines.list_all():
-            print("\tVM: {}".format(vm.name))
-            v = dotdict()
-            v.cloud_id = vm.cloud_id
-            v.cloud = vm.cloud
-            v.name = vm.name
-            v.region = vm.region
-            v.size = vm.size
-            v.state = vm.state
-            v.public_ips = vm.public_ips
-            v.private_ips = vm.private_ips
-            list.append(v)
-
-        return self.to_dict(list)
 
     # TODO Implement Suspend Method
     def suspend(self, name=None):
@@ -261,15 +243,11 @@ class NativeProvider(ComputeNodeABC):
         if vmName is None:
             vmName = self.VM_NAME
 
-        node = dotdict()
-        node.name = groupName
-        node.vmName = vmName
-
         # Delete VM
-        print('\nDeleteing Azure Virtual Machine')
+        VERBOSE(" ".join('Deleteing Azure Virtual Machine'))
         async_vm_delete = self.compute_client.virtual_machines.delete(groupName, vmName)
         async_vm_delete.wait()
-        return node
+        return self.info(groupName)
 
     # TODO Migrate code from Init that is meant for creating a Node
     def create(self, name=None, image=None, size=None, timeout=360, **kwargs):
@@ -300,6 +278,9 @@ class NativeProvider(ComputeNodeABC):
         """
         # if destination is None, increase the name counter and use the new name
         # must return dict
+
+        HEADING(c=".")
+        return None
 
     def create_nic(self):
         """
@@ -378,43 +359,62 @@ class NativeProvider(ComputeNodeABC):
             },
         }
 
-    def to_dict(self, lst, id="name"):
-        d = {}
-        if lst is not None:
-            for entry in lst:
-                d[entry[id]] = entry
-        return d
-
-
-    def update_dict(self, elements, func=None):
-        # this is an internal function for building dict object
+    def update_dict(self, elements, kind=None):
+        """
+        Libcloud returns an object or list of objects With the dict method
+        this object is converted to a dict. Typically this method is used internally.
+        :param elements: the elements
+        :param kind: Kind is image, flavor, or node, secgroup and key
+        :return:
+        """
+        if elements is None:
+            return None
+        elif type(elements) == list:
+            _elements = elements
+        else:
+            _elements = [elements]
         d = []
-        for element in elements:
+        for element in _elements:
             entry = element.__dict__
             entry["cm"] = {
-                "kind": "cloud",
-                "cloud": self.cloud,
-                "name": element.name
+                "kind": kind,
+                "driver": self.cloudtype,
+                "cloud": self.cloud
             }
-            element.properties = element.properties.__dict__
-            entry["cm"]["created"] = \
-                element.properties["creation_time"].isoformat()[0]
-            entry["cm"]["updated"] = \
-                element.properties["last_modified"].isoformat()[0]
-            entry["cm"]["size"] = element.properties["content_length"]
-            del element.properties["copy"]
-            del element.properties["lease"]
-            del element.properties["content_settings"]
-            del element.properties["creation_time"]
-            del element.properties["last_modified"]
-            if func == 'delete':
-                entry["cm"]["status"] = "deleted"
-            else:
-                entry["cm"]["status"] = "exists"
-            if element.properties["deleted_time"] is not None:
-                entry["cm"]["deleted"] = element.properties[
-                    "deleted_time"].isoformat()
-                del element.properties["deleted_time"]
+            if kind == 'node':
+                entry["cm"]["updated"] = str(datetime.utcnow())
+                entry["cm"]["name"] = entry["name"]
+                entry["cm"]["region"] = entry["region"] #Check feasibility of the following items
+                entry["cm"]["size"] = entry["size"] #Check feasibility of the following items
+                entry["cm"]["state"] = entry["state"] #Check feasibility of the following items
+                entry["cm"]["public_ips"] = entry["public_ips"] #Check feasibility of the following items
+                entry["cm"]["private_ips"] = entry["private_ips"] #Check feasibility of the following items
+                entry["cm"]["cloud"] = entry["cloud"] #Check feasibility of the following items
+                entry["cm"]["cloud_id"] = entry["cloud_id"] #Check feasibility of the following items
+                if "created_at" in entry:
+                    entry["cm"]["created"] = str(entry["created_at"])
+                else:
+                    entry["cm"]["created"] = entry["modified"]
+            elif kind == 'flavor':
+                entry["cm"]["created"]  = str(datetime.utcnow())
+                entry["cm"]["updated"]  = str(datetime.utcnow())
+                entry["cm"]["name"]     = entry["name"]
+            elif kind == 'image':
+                entry['cm']['created']  = str(datetime.utcnow())
+                entry['cm']['updated']  = str(datetime.utcnow())
+                entry["cm"]["name"]     = entry["name"]
+            elif kind == 'secgroup':
+                if self.cloudtype == 'azure':
+                    entry["cm"]["name"] = entry["name"]
+                else:
+                    pass
+
+            if "extra" in entry:
+                del entry["extra"]
+            if "_uuid" in entry:
+                del entry["_uuid"]
+            if "driver" in entry:
+                del entry["driver"]
+
             d.append(entry)
         return d
-
