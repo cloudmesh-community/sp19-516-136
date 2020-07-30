@@ -1,4 +1,4 @@
-# Virtual Machines and Storage Management using Azure's Python Libraries
+# Azure Virtual Machines and Storage Management in Python
 
 | Joaquin Avila Eggleton
 | javilaeg@iu.edu
