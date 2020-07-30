@@ -239,7 +239,7 @@ After clicking on Subscriptions, you will be able to locate your current subscri
 Here are some of the services that will continue to be available after the 30 days, which are of interest to 
 our cloudmesh project.
 
-|PRODUCT|PERIOD OF FREE AVAILABILITY
+|PRODUCT| FREE
 |-------|----------------------------
 |750 hours of Azure B1S General Purpose Virtual Machines for Microsoft Windows Server|12 months
 |750 hours of Azure B1S General Purpose Virtual Machines for Linux|12 months
