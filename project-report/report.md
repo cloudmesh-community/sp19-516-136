@@ -1,9 +1,10 @@
 ## Virtual Machines and Storage Management using Azure's Python Libraries
-| **Joaquin Avila Eggleton**
+
+| Joaquin Avila Eggleton
 | javilaeg@iu.edu
-| *Indiana University*
+| Indiana University
 | hid: sp19-516-136
-| github: [:cloud:] (https://github.com/cloudmesh-community/sp19-516-136/project-report/report.md)
+| github: [:cloud:](https://github.com/cloudmesh-community/sp19-516-136/project-report/report.md)
 
 ---
 
@@ -57,40 +58,40 @@ The following yaml sample depicts the Cloud section for Azure's compute configur
 code related to Virtual Machines Management.
 
 ```yaml
-   cloudmesh:
-     ...
-     cloud:
-       ...
-       azure:
-         cm:
-           active: True
-           heading: Azure
-           host: azure.microsoft.com
-           label: Azure
-           kind: azure
-           version: 'latest'
-           service: compute
-         default:
-           image: 'linux:Canonical:UbuntuServer:16.04-LTS:latest'
-           image2: 'windows:MicrosoftWindowsServer:WindowsServer:2016-Datacenter:latest'
-           size: 'Basic_A0'
-           resource_group: 'cloudmesh'
-           storage_account: 'cmdrive'
-           network: 'cmnetwork' 
-           subnet: 'cmsubnet'
-           blob_container: 'vhds'
-           AZURE_VM_IP_CONFIG: 'cloudmesh-ip-config'
-           AZURE_VM_NIC: 'cloudmesh-nic'
-           AZURE_VM_DISK_NAME: 'cloudmesh-os-disk'
-           AZURE_VM_USER: TBD
-           AZURE_VM_PASSWORD: TBD
-           AZURE_VM_NAME: 'cloudmeshVM'
-         credentials:
-           AZURE_TENANT_ID: 'xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
-           AZURE_SUBSCRIPTION_ID: 'xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
-           AZURE_APPLICATION_ID: 'xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
-           AZURE_SECRET_KEY: TBD
-           AZURE_REGION: 'eastus'           
+cloudmesh:
+  ...
+  cloud:
+    ...
+    azure:
+      cm:
+        active: True
+        heading: Azure
+        host: azure.microsoft.com
+        label: Azure
+        kind: azure
+        version: 'latest'
+        service: compute
+      default:
+        image: 'linux:Canonical:UbuntuServer:16.04-LTS:latest'
+        image2: 'windows:MicrosoftWindowsServer:WindowsServer:2016-Datacenter:latest'
+        size: 'Basic_A0'
+        resource_group: 'cloudmesh'
+        storage_account: 'cmdrive'
+        network: 'cmnetwork' 
+        subnet: 'cmsubnet'
+        blob_container: 'vhds'
+        AZURE_VM_IP_CONFIG: 'cloudmesh-ip-config'
+        AZURE_VM_NIC: 'cloudmesh-nic'
+        AZURE_VM_DISK_NAME: 'cloudmesh-os-disk'
+        AZURE_VM_USER: TBD
+        AZURE_VM_PASSWORD: TBD
+        AZURE_VM_NAME: 'cloudmeshVM'
+      credentials:
+        AZURE_TENANT_ID: 'xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+        AZURE_SUBSCRIPTION_ID: 'xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+        AZURE_APPLICATION_ID: 'xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+        AZURE_SECRET_KEY: TBD
+        AZURE_REGION: 'eastus'           
 ```
 
 > **_NOTE:_** 
@@ -188,6 +189,7 @@ The second one includes a cloud environment `(client_id, secret, tenant, cloud_e
 
 The `cloud_environment` represents an Azure Cloud instance.
 The current available `cloud_environment` options are:
+
 * `AZURE_PUBLIC_CLOUD` 
 * `AZURE_CHINA_CLOUD`
 * `AZURE_US_GOV_CLOUD` 
@@ -221,7 +223,7 @@ credentials = ServicePrincipalCredentials(
 
 ##### Subscription ID
 
-The "Subscription ID" variable is not needed as part of ServicePrincipalCredentials however it will be required 
+The `Subscription ID` variable is not needed as part of ServicePrincipalCredentials however it will be required 
 by all Management Classes, which we will be reviewing next `(ResourceManagementClient, NetworkManagementClient
 and ComputeManagementClient)`.
 
